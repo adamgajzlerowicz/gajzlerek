@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
     AppRegistry,
     StyleSheet,
+    Button,
     Text,
     View,
     TouchableOpacity,
@@ -10,6 +11,9 @@ import {
 import SendSMS from 'react-native-sms-x';
 
 export default class RNSMS extends Component {
+    static navigationOptions = {
+        title: 'Home',
+    };
     sendSMSFunction() {
         SendSMS.send(666, "+48737909076", "Hey.., this is me!\nGood to see you. Have a nice day.",
             (id, msg)=>{
@@ -17,22 +21,24 @@ export default class RNSMS extends Component {
             }
         );
     }
-    sendSMSFunctionBad() {
-        SendSMS.send(667, "+48737909", "Hey.., this is me!\nGood to see you. Have a nice day.",
-            (id, msg)=>{
-                ToastAndroid.show(msg, ToastAndroid.SHORT);
-            }
-        );
-    }
     render() {
+        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>        
-                <TouchableOpacity style={styles.button} onPress={this.sendSMSFunction.bind(this)}>
-                    <Text>Send SMS</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={this.sendSMSFunctionBad.bind(this)}>
-                    <Text>Send bad SMS</Text>
-                </TouchableOpacity>
+                <Button
+                    title="Ustawienia"
+                    onPress={() => navigate('Options') }
+                />
+                <Button 
+                    title="ON"
+                    color="green"
+                    onPress={this.sendSMSFunction.bind(this)}
+                />
+                <Button
+                    title="OFF"
+                    color="red"
+                    onPress={this.sendSMSFunction.bind(this)}
+                />
             </View>
         );
     }

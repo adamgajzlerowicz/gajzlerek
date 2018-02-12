@@ -1,19 +1,23 @@
 import React from 'react';
-import { Button } from 'react-native';
+import { 
+    View, 
+    TextInput,
+    Button
+} from 'react-native';
 
 export default class HomeScreen extends React.Component {
     static navigationOptions = {
-        title: 'Welcome',
+        title: 'Opcje',
     };
     render() {
         const { navigate } = this.props.navigation;
         return (
-            <Button
-                title="Go to Jane's profile"
-                onPress={() =>
-                        navigate('Profile', { name: 'Jane' })
-                }
-            />
+            <View>
+                <TextInput placeholder={'Numer ON'}/>
+                <TextInput placeholder={'Numer OFF'}/>
+                <TextInput placeholder={'Wiadomosc ON'}/>
+                <TextInput placeholder={'Wiadomosc OFF'}/>
+            </View>
         );
     }
 }

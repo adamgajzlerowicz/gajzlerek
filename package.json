@@ -12,7 +12,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "test": "node node_modules/jest/bin/jest.js",
-    "clean": "rm -rf $TMPDIR/react-*"
+    "clean": "watchman watch-del-all; rm -rf $TMPDIR/react-*; rm -rf $TMPDIR/haste-map-react-native-packager-*"
   },
   "jest": {
     "preset": "react-native"
