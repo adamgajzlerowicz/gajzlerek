@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
     View, 
+    ToastAndroid,
     AsyncStorage,
     TextInput,
     Button
@@ -29,8 +30,14 @@ export default class HomeScreen extends React.Component {
             });
     }
 
-    setData(){
-        
+    setData() {
+        AsyncStorage.multiSet([
+            ['numberOn', this.state.numberOn],
+            ['numberOff', this.state.numberOff],
+            ['contentOn', this.state.contentOn], 
+            ['contentOff', this.state.contentOff]
+        ])
+            .then(()=>ToastAndroid.show('Zapisano', ToastAndroid.SHORT));
     };
 
     render() {
@@ -43,7 +50,7 @@ export default class HomeScreen extends React.Component {
                 <TextInput placeholder={'Wiadomosc OFF'} value={this.state.contentOff} onChangeText={(contentOff)=>this.setState({contentOff})}/>
                 <Button
                     title="Zapisz"
-                    onPress={() => navigate('Options') }
+                    onPress={() => this.setData()}
                 />
             </View>
         );

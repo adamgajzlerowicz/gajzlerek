@@ -15,6 +15,12 @@ export default class RNSMS extends Component {
         title: 'Home',
     };
     sendSMSFunction() {
+        AsyncStorage.multiGet(['numberOn','numberOff','contentOn', 'contentOff'])
+            .then(([[a, numberOn], [b, numberOff], [c, contentOn], [d, contentOff]]) => {
+
+                
+            });
+
         SendSMS.send(666, "+48737909076", "Hey.., this is me!\nGood to see you. Have a nice day.",
             (id, msg)=>{
                 ToastAndroid.show(msg, ToastAndroid.SHORT);
