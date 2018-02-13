@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
     View, 
+    AsyncStorage,
     TextInput,
     Button
 } from 'react-native';
@@ -9,14 +10,41 @@ export default class HomeScreen extends React.Component {
     static navigationOptions = {
         title: 'Opcje',
     };
+    state = {
+        numberOn: '',
+        numberOff: '',
+        contentOn: '',
+        contentOff: ''
+    }
+
+    componentDidMount() {
+        AsyncStorage.multiGet(['numberOn','numberOff','contentOn', 'contentOff'])
+            .then(([[a, numberOn], [b, numberOff], [c, contentOn], [d, contentOff]]) => {
+                this.setState({
+                    numberOn: numberOn ? numberOn : '',
+                    numberOff: numberOff ? numberOff : '',
+                    contentOn: contentOn ? contentOn : '',
+                    contentOff: contentOff ? contentOff : '',
+                })
+            });
+    }
+
+    setData(){
+        
+    };
+
     render() {
         const { navigate } = this.props.navigation;
         return (
             <View>
-                <TextInput placeholder={'Numer ON'}/>
-                <TextInput placeholder={'Numer OFF'}/>
-                <TextInput placeholder={'Wiadomosc ON'}/>
-                <TextInput placeholder={'Wiadomosc OFF'}/>
+                <TextInput placeholder={'Numer ON'} value={this.state.numberOn} onChangeText={(numberOn)=>this.setState({numberOn})}/>
+                <TextInput placeholder={'Numer OFF'} value={this.state.numberOff} onChangeText={(numberOff)=>this.setState({numberOff})}/>
+                <TextInput placeholder={'Wiadomosc ON'} value={this.state.contentOn} onChangeText={(contentOn)=>this.setState({contentOn})}/>
+                <TextInput placeholder={'Wiadomosc OFF'} value={this.state.contentOff} onChangeText={(contentOff)=>this.setState({contentOff})}/>
+                <Button
+                    title="Zapisz"
+                    onPress={() => navigate('Options') }
+                />
             </View>
         );
     }
