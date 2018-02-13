@@ -12,18 +12,16 @@ export default class HomeScreen extends React.Component {
         title: 'Opcje',
     };
     state = {
-        numberOn: '',
-        numberOff: '',
+        number: '',
         contentOn: '',
         contentOff: ''
     }
 
     componentDidMount() {
-        AsyncStorage.multiGet(['numberOn','numberOff','contentOn', 'contentOff'])
-            .then(([[a, numberOn], [b, numberOff], [c, contentOn], [d, contentOff]]) => {
+        AsyncStorage.multiGet(['number','contentOn', 'contentOff'])
+            .then(([[a, number], [b, contentOn], [c, contentOff]]) => {
                 this.setState({
-                    numberOn: numberOn ? numberOn : '',
-                    numberOff: numberOff ? numberOff : '',
+                    number: number ? number : '',
                     contentOn: contentOn ? contentOn : '',
                     contentOff: contentOff ? contentOff : '',
                 })
@@ -32,8 +30,7 @@ export default class HomeScreen extends React.Component {
 
     setData() {
         AsyncStorage.multiSet([
-            ['numberOn', this.state.numberOn],
-            ['numberOff', this.state.numberOff],
+            ['number', this.state.number],
             ['contentOn', this.state.contentOn], 
             ['contentOff', this.state.contentOff]
         ])
@@ -44,8 +41,7 @@ export default class HomeScreen extends React.Component {
         const { navigate } = this.props.navigation;
         return (
             <View>
-                <TextInput placeholder={'Numer ON'} value={this.state.numberOn} onChangeText={(numberOn)=>this.setState({numberOn})}/>
-                <TextInput placeholder={'Numer OFF'} value={this.state.numberOff} onChangeText={(numberOff)=>this.setState({numberOff})}/>
+                <TextInput placeholder={'Numer'} value={this.state.number} onChangeText={(number)=>this.setState({number})}/>
                 <TextInput placeholder={'Wiadomosc ON'} value={this.state.contentOn} onChangeText={(contentOn)=>this.setState({contentOn})}/>
                 <TextInput placeholder={'Wiadomosc OFF'} value={this.state.contentOff} onChangeText={(contentOff)=>this.setState({contentOff})}/>
                 <Button

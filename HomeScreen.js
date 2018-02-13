@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {
+    AsyncStorage,
+    ScrollView,    
     AppRegistry,
     StyleSheet,
     Button,
@@ -14,16 +16,44 @@ export default class RNSMS extends Component {
     static navigationOptions = {
         title: 'Home',
     };
-    sendSMSFunction() {
-        AsyncStorage.multiGet(['numberOn','numberOff','contentOn', 'contentOff'])
-            .then(([[a, numberOn], [b, numberOff], [c, contentOn], [d, contentOff]]) => {
 
-                
+    // message: {
+    // status: string,
+    // id: number
+    // }
+    state = {
+        messages: [],
+        number: '',
+        contentOn: '',
+        contentOff: ''
+    };
+
+    componentDidMount() {
+        AsyncStorage.multiGet(['number','contentOn', 'contentOff', 'messages'])
+            .then(([[a, number], [b, contentOn], [c, contentOff], [d, messages]]) => {
+                this.setState({
+                    number: number ? number : '',
+                    contentOn: contentOn ? contentOn : '',
+                    contentOff: contentOff ? contentOff : '',
+                    messages: messages ? messages : [],
+                })
             });
+    }
 
-        SendSMS.send(666, "+48737909076", "Hey.., this is me!\nGood to see you. Have a nice day.",
+    sendSMSFunction(type) { //ON | OFF
+        const id = new Date().valueOf();
+        SendSMS.send(id, this.state.number, type === 'ON' ? this.state.contentOn : this.state.contentOff , 
             (id, msg)=>{
-                ToastAndroid.show(msg, ToastAndroid.SHORT);
+                AsyncStorage.getItem('messages').then(res=>{
+                    let messages = !res ? [] : JSON.parse(res);
+                    messages.push({
+                        id, status: msg 
+                    })
+                    AsyncStorage.setItem('messages', JSON.stringify(messages)).then(()=>{
+                        ToastAndroid.show(msg, ToastAndroid.SHORT);
+                        this.setState({ messages });
+                    })
+                })
             }
         );
     }
@@ -38,13 +68,16 @@ export default class RNSMS extends Component {
                 <Button 
                     title="ON"
                     color="green"
-                    onPress={this.sendSMSFunction.bind(this)}
+                    onPress={()=>this.sendSMSFunction('ON')}
                 />
                 <Button
                     title="OFF"
                     color="red"
-                    onPress={this.sendSMSFunction.bind(this)}
+                    onPress={()=>this.sendSMSFunction('OFF')}
                 />
+                <ScrollView>
+                    <Text>lkjsdf</Text>
+                </ScrollView>
             </View>
         );
     }
