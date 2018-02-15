@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import {
     AsyncStorage,
     ScrollView,    
@@ -11,6 +12,11 @@ import {
     ToastAndroid
 } from 'react-native';
 import SendSMS from 'react-native-sms-x';
+
+const Row = ({ id, status, type })=>{
+    return <Text style={{padding: 10}}> {type}: {moment(id).format('YYYY-MM-DD HH:mm:ss')} {':         '} {status} </Text>;
+}
+
 
 export default class RNSMS extends Component {
     static navigationOptions = {
@@ -35,19 +41,26 @@ export default class RNSMS extends Component {
                     number: number ? number : '',
                     contentOn: contentOn ? contentOn : '',
                     contentOff: contentOff ? contentOff : '',
-                    messages: messages ? messages : [],
+                    messages: messages ? JSON.parse(messages) : [],
                 })
             });
     }
 
     sendSMSFunction(type) { //ON | OFF
-        const id = new Date().valueOf();
-        SendSMS.send(id, this.state.number, type === 'ON' ? this.state.contentOn : this.state.contentOff , 
-            (id, msg)=>{
+        const { number, contentOn, contentOff } = this.state;
+        
+        if (!number) {
+            return ToastAndroid.show('Brakuje numeru telefonu', ToastAndroid.SHORT);
+        }
+
+        const id = moment().valueOf();
+
+        SendSMS.send(id, number, type === 'ON' ? contentOn : contentOff , 
+            (_, msg)=>{
                 AsyncStorage.getItem('messages').then(res=>{
                     let messages = !res ? [] : JSON.parse(res);
                     messages.push({
-                        id, status: msg 
+                        id, status: msg, type
                     })
                     AsyncStorage.setItem('messages', JSON.stringify(messages)).then(()=>{
                         ToastAndroid.show(msg, ToastAndroid.SHORT);
@@ -59,25 +72,56 @@ export default class RNSMS extends Component {
     }
     render() {
         const { navigate } = this.props.navigation;
+        let { messages } = this.state;
+        messages = messages.map( m =><Row type={m.type} key={m.id} id={m.id} status={m.status} />) 
+
         return (
             <View style={styles.container}>        
-                <Button
-                    title="Ustawienia"
+                <TouchableOpacity
                     onPress={() => navigate('Options') }
-                />
-                <Button 
-                    title="ON"
-                    color="green"
-                    onPress={()=>this.sendSMSFunction('ON')}
-                />
-                <Button
-                    title="OFF"
-                    color="red"
-                    onPress={()=>this.sendSMSFunction('OFF')}
-                />
-                <ScrollView>
-                    <Text>lkjsdf</Text>
+                    style={styles.button}
+                >
+                    <Text> Ustawienia </Text>
+                </TouchableOpacity>
+                <ScrollView
+                    style={{width: '90%'}}
+                    ref={ref => this.scrollView = ref}
+                    onContentSizeChange={() => {
+                        this.scrollView.scrollToEnd({animated: true}) 
+                    }}
+                >
+                    { messages }
                 </ScrollView>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        onPress={()=>this.sendSMSFunction('ON')}
+                        style={{
+                            backgroundColor: 'green',
+                            alignItems: 'center',
+                            alignSelf: 'stretch',
+                            padding: 20,
+                            paddingLeft: 50,
+                            paddingRight: 50,
+                            margin: 20
+                        }}
+                    >
+                        <Text style={{color: "white"}}> ON </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={ ()=>this.sendSMSFunction('OFF') }
+                        style={{
+                            backgroundColor: 'red',
+                            alignItems: 'center',
+                            alignSelf: 'stretch',
+                            padding: 20,
+                            paddingLeft: 50,
+                            paddingRight: 50,
+                            margin: 20
+                        }}
+                    >
+                        <Text style={{color: "white"}}> OFF </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -90,12 +134,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
     },  
+    buttonContainer: {
+        flexDirection: 'row'
+    },
     button: {
-        padding: 10,
-        borderWidth: .5,
-        borderColor: '#bbb',
-        margin: 10,
+        backgroundColor: '#05A5D1',
         alignItems: 'center',
-        justifyContent: 'center'
+        alignSelf: 'stretch',
+        padding: 20,
     }
 });
